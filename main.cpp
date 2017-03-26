@@ -18,7 +18,7 @@ int main() {
   return 0;
 }
 
-g++ -o hello_world main.cpp -O2 -L/usr/X11R6/lib -lm -lpthread -lX11 
+g++ -o main main.cpp -O2 -L/usr/X11R6/lib -lm -lpthread -lX11 
 #endif
 
 
