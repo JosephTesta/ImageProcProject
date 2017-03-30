@@ -137,7 +137,7 @@ void brightDark(CImg<unsigned char>& anImage,CImgDisplay& disp) {
 }
 
 
-void noise(CImg<unsigned char>& anImage, CImgDisplay& main_disp) {
+void noise(CImg<unsigned char>& anImage, CImgDisplay& disp) {
   int amountSigma = 0;
   int noiseChoice = 0;
   int noiseToggle = 0;
@@ -153,11 +153,11 @@ void noise(CImg<unsigned char>& anImage, CImgDisplay& main_disp) {
 
   CImg<unsigned char> secondImage = anImage;
   //secondImage.get_noise(amountSigma, noiseChoice);
-  main_disp = secondImage;
+  disp = secondImage;
 
   if (noiseChoice == 3) {
     while(1) {
-      main_disp = secondImage;
+      disp = secondImage;
 
       std::cout << "Press 1 to increase noise and 0 to go back" << std::endl;
       std::cin >> noiseToggle;
@@ -179,7 +179,7 @@ void noise(CImg<unsigned char>& anImage, CImgDisplay& main_disp) {
   }
   else {
     while(1) {
-      main_disp = secondImage;
+      disp = secondImage;
 
       std::cout << "Press 1 to decrease noise, 2 to increase noise and 0 to go back" << std::endl;
       std::cin >> noiseToggle;
@@ -293,7 +293,7 @@ void invert(CImg<unsigned char>& anImage) {
     CImg<unsigned char> secondImage = anImage;
     for (int r = 0; r < height; r++) {
         for (int c = 0; c < width; c++) {
-		    secondImage(c,r,0,0) = 255-(int)secondImage(c,r,0,0);
+		        secondImage(c,r,0,0) = 255-(int)secondImage(c,r,0,0);
             secondImage(c,r,0,1) = 255-(int)secondImage(c,r,0,1);
             secondImage(c,r,0,2) = 255-(int)secondImage(c,r,0,2);
 		}
