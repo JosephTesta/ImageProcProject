@@ -62,6 +62,41 @@ void blurImage(CImg<unsigned char>& anImage,CImgDisplay& disp) {
   }
 }
 
+void crop(CImg<unsigned char>& anImage,CImgDisplay& disp) {
+  double currentCrop = 1.0;
+  CImg<unsigned char> secondImage = anImage;
+  disp = secondImage;
+  int cropChoice = 0;
+  int width = anImage.width();
+  int height = anImage.height();
+  while(1) {
+  	disp = secondImage;
+    std::cout << "press 1 to crop less, 2 to crop more and 0 to go back" << std::endl;
+    std::cin >> cropChoice;
+    switch(cropChoice) {
+      case 0 :
+        anImage = secondImage;
+        return;     
+      case 1 : 
+      	if(currentCrop < 1) {
+        	currentCrop += .1;
+        	secondImage = anImage.get_crop(0,0,currentCrop*width,currentCrop*height);
+    	}
+        break;
+      case 2 : 
+      	if(currentCrop > .11) {
+      		currentCrop -= .1;
+        	secondImage = anImage.get_crop(0,0,currentCrop*width,currentCrop*height);
+        }
+        break;
+
+      default: 
+        std::cout << "Enter another value" << std::endl;
+        break;
+    }
+  }
+}
+
 void brightDark(CImg<unsigned char>& anImage,CImgDisplay& disp) {
   CImg<unsigned char> secondImage = anImage;
   disp = secondImage;
@@ -155,6 +190,7 @@ void colorOverlay(CImg<unsigned char>& anImage) {
 	             anImage(w,h,0,2) = uint(255);
 	         }
         break;
+
       default: 
         std::cout << "Enter another value" << std::endl;
         break;
@@ -192,10 +228,10 @@ void invert(CImg<unsigned char>& anImage) {
 
 
 int main() {
-  CImg<unsigned char> baseImage("hongman.jpg");
+  CImg<unsigned char> baseImage("4k-image-santiago.jpg");
   //CImg<unsigned char> lastImage("hongman.jpg");
   std::vector<CImg<unsigned char> > lastImage;
-  CImg<unsigned char> currentImage("hongman.jpg");
+  CImg<unsigned char> currentImage("4k-image-santiago.jpg");
   //const unsigned char red[] = { 255,0,0 }, green[] = { 0,255,0 }, blue[] = { 0,0,255 };
   //image.blur(2.5);
   //blurImage(image);
@@ -207,7 +243,7 @@ int main() {
     second_disp = currentImage;
     std::cout << "Press 0 to exit\nPress 1 to undo\n"
     "Press 2 to convert to grayscale\nPress 3 to invert(negative)"
-    "\nPress 4 to blur\nPress 5 to overlay a color\nPress 6 to change brightness" << std::endl;
+    "\nPress 4 to blur\nPress 5 to overlay a color\nPress 6 to change brightness\nPress 8 to crop" << std::endl;
     std::cin >> choice;
     switch(choice) {
     	case 0 : 
@@ -241,7 +277,12 @@ int main() {
         case 6:
       		lastImage.push_back(currentImage);
         	brightDark(currentImage,second_disp);
-        break;	
+        break;
+        case 8:
+      		lastImage.push_back(currentImage);
+        	crop(currentImage,second_disp);
+        break;
+
       	default: 
         	std::cout << "Enter another value\n" << std::endl;
         break;
