@@ -38,7 +38,9 @@ void blurImage(CImg<unsigned char>& anImage,CImgDisplay& disp) {
   int blurChange = 0;
   while(1) {
   	disp = secondImage;
-    std::cout << "press 1 to decrease blur, 2 to increase blur and 0 to go back" << std::endl;
+    std::cout << "\nPress 0 to go back"
+    "\nPress 1 to decrease blur"
+    "\nPress 2 to increase blur" << std::endl;
     std::cin >> blurChange;
     switch(blurChange) {
       case 0 :
@@ -72,7 +74,9 @@ void crop(CImg<unsigned char>& anImage,CImgDisplay& disp) {
   int height = anImage.height();
   while(1) {
   	disp = secondImage;
-    std::cout << "press 1 to crop less, 2 to crop more and 0 to go back" << std::endl;
+    std::cout << "\nPress 0 to go back"
+    "\nPress 1 to crop less"
+    "\nPress 2 to crop more" << std::endl;
     std::cin >> cropChoice;
     switch(cropChoice) {
       case 0 :
@@ -106,7 +110,9 @@ void brightDark(CImg<unsigned char>& anImage,CImgDisplay& disp) {
   int height = anImage.height();
   while(1) {
   	disp = secondImage;
-    std::cout << "press 1 to darken, 2 to brighten and 0 to go back" << std::endl;
+    std::cout << "\nPress 0 to go back"
+    "\nPress 1 to darken"
+    "\nPress 2 to brighten" << std::endl;
     std::cin >> brightChange;
     switch(brightChange) {
       case 0 :
@@ -141,79 +147,99 @@ void noise(CImg<unsigned char>& anImage, CImgDisplay& disp) {
   int amountSigma = 0;
   int noiseChoice = 0;
   int noiseToggle = 0;
+  while(1) {
+    std::cout << "\nWhat kind of noise?" 
+    "\nPress 0 to go back"
+    "\nPress 1 for Gaussian"
+    "\nPress 2 for Uniform"
+    "\nPress 3 for Salt and Pepper"
+    "\nPress 4 for Poisson"
+    "\nPress 5 for Rician" << std::endl;
+    std::cin >> noiseChoice;
 
-  std::cout << "\nWhat kind of noise?" 
-  "\nPress 0 for Gaussian"
-  "\nPress 1 for Uniform"
-  "\nPress 2 for Salt and Pepper"
-  "\nPress 3 for Poisson"
-  "\nPress 4 for Rician" << std::endl;
-  std::cin >> noiseChoice;
-  std::cout << std::endl;
+    CImg<unsigned char> secondImage = anImage;
+    //secondImage.get_noise(amountSigma, noiseChoice);
+    disp = secondImage;
+    switch(noiseChoice) {
+      case 0:
+        return;
+      case 4: 
+        while(1) {
+          disp = secondImage;
 
-  CImg<unsigned char> secondImage = anImage;
-  //secondImage.get_noise(amountSigma, noiseChoice);
-  disp = secondImage;
+          std::cout << "\nPress 0 to go back"
+          "\nPress 1 to increase noise" << std::endl;
+          std::cin >> noiseToggle;
 
-  if (noiseChoice == 3) {
-    while(1) {
-      disp = secondImage;
+          switch(noiseToggle) {
+            case 0:
+              anImage = secondImage;
+              return;
+            case 1: 
+              secondImage = anImage.get_noise(amountSigma, noiseChoice-1);
+              anImage = secondImage;
+              break;
 
-      std::cout << "Press 1 to increase noise and 0 to go back" << std::endl;
-      std::cin >> noiseToggle;
-
-      switch(noiseToggle) {
-        case 0:
-          anImage = secondImage;
-          return;
-        case 1: 
-          secondImage = anImage.get_noise(amountSigma, noiseChoice);
-          anImage = secondImage;
-          break;
-
-        default: 
-          std::cout << "Enter another value" << std::endl;
-          break;
-      }
-    }
-  }
-  else {
-    while(1) {
-      disp = secondImage;
-
-      std::cout << "Press 1 to decrease noise, 2 to increase noise and 0 to go back" << std::endl;
-      std::cin >> noiseToggle;
-
-      switch(noiseToggle) {
-        case 0:
-          anImage = secondImage;
-          return;
-        case 1: 
-          if(amountSigma >= 10) {
-            amountSigma -= 10;
+            default: 
+              std::cout << "Enter another value" << std::endl;
+              break;
           }
-          //secondImage = anImage;
-          secondImage = anImage.get_noise(amountSigma, noiseChoice);
-          break;
-        case 2: 
-          amountSigma += 10;
-          //secondImage = anImage;
-          secondImage = anImage.get_noise(amountSigma, noiseChoice);
-          break;
+        }
+        break;
 
-        default: 
+      default: 
+        if (noiseChoice == 1 || noiseChoice == 2 || noiseChoice == 3 || noiseChoice == 5) {
+          while(1) {
+            disp = secondImage;
+
+            std::cout << "\nPress 0 to go back"
+            "\nPress 1 to decrease noise"
+            "\nPress 2 to increase noise" << std::endl;
+            std::cin >> noiseToggle;
+
+            switch(noiseToggle) {
+              case 0:
+                anImage = secondImage;
+                return;
+              case 1: 
+                if(amountSigma >= 10) {
+                  amountSigma -= 10;
+                }
+                //secondImage = anImage;
+                secondImage = anImage.get_noise(amountSigma, noiseChoice-1);
+                break;
+              case 2: 
+                amountSigma += 10;
+                //secondImage = anImage;
+                secondImage = anImage.get_noise(amountSigma, noiseChoice-1);
+                break;
+
+              default: 
+                std::cout << "Enter another value" << std::endl;
+                break;
+            }
+          }
+        }
+        else {
           std::cout << "Enter another value" << std::endl;
-          break;
-      }
+        }
+        break;
     }
   }
+
 }
 
 
 void colorOverlay(CImg<unsigned char>& anImage) {
   int colorChoice = 0;
-    std::cout << "Press 0 to go back\nPress 1 for red\nPress 2 for green"
-    "\nPress 3 for blue\nPress 4 for yellow\nPress 5 for magenta\nPress 6 for cyan" << std::endl;
+    std::cout << "\nChoose a color to overlay"
+    "\nPress 0 to go back"
+    "\nPress 1 for red"
+    "\nPress 2 for green"
+    "\nPress 3 for blue"
+    "\nPress 4 for yellow"
+    "\nPress 5 for magenta"
+    "\nPress 6 for cyan" << std::endl;
     std::cin >> colorChoice;
     int width = anImage.width();
     int height = anImage.height();
@@ -303,10 +329,10 @@ void invert(CImg<unsigned char>& anImage) {
 
 
 int main() {
-  CImg<unsigned char> baseImage("4k-image-santiago.jpg");
+  CImg<unsigned char> baseImage("hongman.jpg");
   //CImg<unsigned char> lastImage("hongman.jpg");
   std::vector<CImg<unsigned char> > lastImage;
-  CImg<unsigned char> currentImage("4k-image-santiago.jpg");
+  CImg<unsigned char> currentImage("hongman.jpg");
   //const unsigned char red[] = { 255,0,0 }, green[] = { 0,255,0 }, blue[] = { 0,0,255 };
   //image.blur(2.5);
   //blurImage(image);
@@ -316,13 +342,19 @@ int main() {
 
   while(!main_disp.is_closed() && !second_disp.is_closed()) {
     second_disp = currentImage;
-    std::cout << "Press 0 to save and exit\nPress 1 to undo\n"
-    "Press 2 to convert to grayscale\nPress 3 to invert(negative)"
-    "\nPress 4 to blur\nPress 5 to overlay a color\nPress 6 to change brightness\nPress 7 to add noise\nPress 8 to crop" << std::endl;
+    std::cout << "\nPress 0 to save and exit"
+    "\nPress 1 to undo"
+    "\nPress 2 to convert to grayscale"
+    "\nPress 3 to invert(negative)"
+    "\nPress 4 to blur"
+    "\nPress 5 to overlay a color"
+    "\nPress 6 to change brightness"
+    "\nPress 7 to add noise"
+    "\nPress 8 to crop" << std::endl;
     std::cin >> choice;
     switch(choice) {
     	case 0 : 
-        	std::cout << "Image saved as editedImage.jpg\nGoodbye\n";
+        	std::cout << "\nImage saved as editedImage.jpg\nGoodbye\n";
           currentImage.save("editedImage.jpg");
         	return 0;       
       	case 1 : 
@@ -331,7 +363,7 @@ int main() {
 	      		lastImage.pop_back();
 	      	}
 	      	else {
-	      		std::cout << "Nothing to undo\n" << std::endl;
+	      		std::cout << "Nothing to undo" << std::endl;
 	      	}
         break;
         case 2 : 
@@ -364,7 +396,7 @@ int main() {
         break;
 
       	default: 
-        	std::cout << "Enter another value\n" << std::endl;
+        	std::cout << "Enter another value" << std::endl;
         break;
     }
   }
