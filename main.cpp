@@ -30,6 +30,44 @@ g++ -o main main.cpp -O2 -L/usr/X11R6/lib -lm -lpthread -lX11
 #include <vector>
 using namespace cimg_library;
 
+void histogramEqualization(CImg<unsigned char>& anImage) {
+  	CImg<unsigned char> secondImage = anImage;
+  	int width = anImage.width();
+  	int height = anImage.height();
+  	int pixelArray[256][3] = {0};
+  	for (int color = 0;color < 3; color++) {
+		for (int h=0; h<height; h++) {
+			for (int w=0; w<width; w++) {
+				pixelArray[anImage(w,h,0,color)][color]++;
+			}
+		}
+	}
+
+	//create mapping
+	int mapping[256][3] = {0};
+	int currentSum = 0;
+	for (int color = 0; color < 3; color++) {
+		currentSum = 0;
+		for (int i=0; i<256; i++) {
+	    	currentSum += pixelArray[i][color];
+			mapping[i][color] = round((256-1)*float(currentSum)/(height*width));
+		}
+	}
+
+	//change output
+	for (int color = 0; color < 3; color++) {
+		for (int h=0; h<height; h++) {
+			for (int w=0; w<width; w++) {
+		    	secondImage(w,h,0,color) = mapping[anImage(w,h,0,color)][color];
+		    	//secondImage(w,h,0,color) = anImage(w,h,0,color) +100;
+
+			}
+		}
+	}
+
+	anImage = secondImage;
+}
+
 void blurImage(CImg<unsigned char>& anImage,CImgDisplay& disp) {
   double currentBlur = 1;
   CImg<unsigned char> secondImage = anImage;
@@ -336,8 +374,8 @@ int main() {
   //const unsigned char red[] = { 255,0,0 }, green[] = { 0,255,0 }, blue[] = { 0,0,255 };
   //image.blur(2.5);
   //blurImage(image);
-  CImgDisplay main_disp(baseImage);
-  CImgDisplay second_disp(currentImage);
+  CImgDisplay main_disp(baseImage,"Original Image");
+  CImgDisplay second_disp(currentImage,"Edited Image");
   int choice = 0;
 
   while(!main_disp.is_closed() && !second_disp.is_closed()) {
@@ -394,7 +432,10 @@ int main() {
       		lastImage.push_back(currentImage);
         	crop(currentImage,second_disp);
         break;
-
+        case 9:
+        	lastImage.push_back(currentImage);
+        	histogramEqualization(currentImage);
+        break;
       	default: 
         	std::cout << "Enter another value" << std::endl;
         break;
