@@ -388,7 +388,9 @@ int main() {
     "\nPress 5 to overlay a color"
     "\nPress 6 to change brightness"
     "\nPress 7 to add noise"
-    "\nPress 8 to crop" << std::endl;
+    "\nPress 8 to crop" 
+    "\nPress 9 to equalize histogram"
+    << std::endl;
     std::cin >> choice;
     switch(choice) {
     	case 0 : 
