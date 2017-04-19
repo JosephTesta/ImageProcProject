@@ -252,7 +252,7 @@ void crop(CImg<unsigned char>& anImage,CImgDisplay& disp) {
         anImage = secondImage;
         return;     
       case 1 : 
-      	std::cout << "Put your mouse on the top-left corner where you'd like to crop\n"
+      	std::cout << "\nPut your mouse on the top-left corner where you'd like to crop\n"
         "the preview image, then enter 1. Enter 0 to cancel." << std::endl;
         std::cin >> cropControl;
         if (cropControl != 1){
@@ -263,7 +263,7 @@ void crop(CImg<unsigned char>& anImage,CImgDisplay& disp) {
           mouseY1 = disp.mouse_y();
           std::cout << mouseX1 << "," << mouseY1 << std::endl;
           if(mouseX1 == -1 || mouseY1 == -1){
-            std::cout << "Mouse is not within the preview image."
+            std::cout << "\nMouse is not within the preview image."
             "\n Place the mouse inside the preview image window where"
             "\n you would like the top-left corner of the cropped image to be."
             "\n and enter 1. Enter 0 to exit."
@@ -287,7 +287,7 @@ void crop(CImg<unsigned char>& anImage,CImgDisplay& disp) {
           }
         }
         disp = secondImage;
-        std::cout << "Put your mouse on the bottom-right corner where you'd like to crop\n"
+        std::cout << "\nPut your mouse on the bottom-right corner where you'd like to crop\n"
         "the preview image, then enter 1. Enter 0 to cancel." << std::endl;
         std::cin >> cropControl;
         if (cropControl != 1){
@@ -298,7 +298,7 @@ void crop(CImg<unsigned char>& anImage,CImgDisplay& disp) {
           mouseY2 = disp.mouse_y();
           std::cout << mouseX2 << "," << mouseY2 << std::endl;
           if(mouseX2 == -1 || mouseY2 == -1){
-            std::cout << "Mouse is not within the preview image."
+            std::cout << "\nMouse is not within the preview image."
             "\n Place the mouse inside the preview image window where"
             "\n you would like the bottom-left corner of the cropped image to be."
             "\n and enter 1. Enter 0 to exit."
@@ -308,7 +308,7 @@ void crop(CImg<unsigned char>& anImage,CImgDisplay& disp) {
               return;
             }
           }else if (mouseX2 < mouseX1 || mouseY2 < mouseY1){
-            std::cout << "Second point must be to the right of and below the first."
+            std::cout << "\nSecond point must be to the right of and below the first."
             "\n Place the mouse inside the preview image window where"
             "\n you would like the bottom-left corner of the cropped image to be."
             "\n and enter 1. Enter 0 to exit."
@@ -332,7 +332,7 @@ void crop(CImg<unsigned char>& anImage,CImgDisplay& disp) {
           }
         }
         disp = secondImage;
-        std::cout << "Is this your intended result? 1 for yes, 0 to cancel." << std::endl;
+        std::cout << "\nIs this your intended result? 1 for yes, 0 to cancel." << std::endl;
         std::cin >> cropControl;
         if (cropControl == 0){
           return;
