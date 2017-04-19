@@ -233,28 +233,117 @@ void crop(CImg<unsigned char>& anImage,CImgDisplay& disp) {
   int cropChoice = 0;
   int width = anImage.width();
   int height = anImage.height();
+  int cropControl = 0;
+  int validMouse1 = 0;
+  int validMouse2 = 0;
+  int mouseX1 = -1;
+  int mouseY1 = -1;
+  int mouseX2 = -1;
+  int mouseY2 = -1;
+  int cWidth;
+  int cHeight;
   while(1) {
   	disp = secondImage;
     std::cout << "\nPress 0 to go back"
-    "\nPress 1 to crop less"
-    "\nPress 2 to crop more" << std::endl;
+    "\nPress 1 to crop." << std::endl;
     std::cin >> cropChoice;
     switch(cropChoice) {
       case 0 :
         anImage = secondImage;
         return;     
       case 1 : 
-      	if(currentCrop < 1) {
-        	currentCrop += .1;
-        	secondImage = anImage.get_crop(0,0,currentCrop*width,currentCrop*height);
-    	}
-        break;
-      case 2 : 
-      	if(currentCrop > .11) {
-      		currentCrop -= .1;
-        	secondImage = anImage.get_crop(0,0,currentCrop*width,currentCrop*height);
+      	std::cout << "Put your mouse on the top-left corner where you'd like to crop\n"
+        "the preview image, then enter 1. Enter 0 to cancel." << std::endl;
+        std::cin >> cropControl;
+        if (cropControl != 1){
+          return;
         }
-        break;
+        while(validMouse1 == 0){
+          mouseX1 = disp.mouse_x();
+          mouseY1 = disp.mouse_y();
+          std::cout << mouseX1 << "," << mouseY1 << std::endl;
+          if(mouseX1 == -1 || mouseY1 == -1){
+            std::cout << "Mouse is not within the preview image."
+            "\n Place the mouse inside the preview image window where"
+            "\n you would like the top-left corner of the cropped image to be."
+            "\n and enter 1. Enter 0 to exit."
+            << std::endl;
+            std::cin >> cropControl;
+            if (cropControl != 1){
+              return;
+            }
+          }else{
+            validMouse1 = 1;
+          }
+        }
+        //display crop region
+        for (int h = 0; h < height; h++) {
+          for (int w = 0; w < width; w++) {
+            if(w < mouseX1 || h < mouseY1){
+              secondImage(w,h,0,0) = 0;
+              secondImage(w,h,0,1) = 0;
+              secondImage(w,h,0,2) = 0;
+            }
+          }
+        }
+        disp = secondImage;
+        std::cout << "Put your mouse on the bottom-right corner where you'd like to crop\n"
+        "the preview image, then enter 1. Enter 0 to cancel." << std::endl;
+        std::cin >> cropControl;
+        if (cropControl != 1){
+          return;
+        }
+        while(validMouse2 == 0){
+          mouseX2 = disp.mouse_x();
+          mouseY2 = disp.mouse_y();
+          std::cout << mouseX2 << "," << mouseY2 << std::endl;
+          if(mouseX2 == -1 || mouseY2 == -1){
+            std::cout << "Mouse is not within the preview image."
+            "\n Place the mouse inside the preview image window where"
+            "\n you would like the bottom-left corner of the cropped image to be."
+            "\n and enter 1. Enter 0 to exit."
+            << std::endl;
+            std::cin >> cropControl;
+            if (cropControl != 1){
+              return;
+            }
+          }else if (mouseX2 < mouseX1 || mouseY2 < mouseY1){
+            std::cout << "Second point must be to the right of and below the first."
+            "\n Place the mouse inside the preview image window where"
+            "\n you would like the bottom-left corner of the cropped image to be."
+            "\n and enter 1. Enter 0 to exit."
+            << std::endl;
+            std::cin >> cropControl;
+            if (cropControl != 1){
+              return;
+            }
+          }else{
+            validMouse2 = 1;
+          }
+        }
+        //display crop region
+        for (int h = 0; h < height; h++) {
+          for (int w = 0; w < width; w++) {
+            if(w > mouseX2|| h > mouseY2){
+              secondImage(w,h,0,0) = 0;
+              secondImage(w,h,0,1) = 0;
+              secondImage(w,h,0,2) = 0;
+            }
+          }
+        }
+        disp = secondImage;
+        std::cout << "Is this your intended result? 1 for yes, 0 to cancel." << std::endl;
+        std::cin >> cropControl;
+        if (cropControl == 0){
+          return;
+        }
+        // Crop here.
+        //disp = seconImage.get_crop(mouseX1,mouseY1,mouseX2,mouseY2);
+        anImage = secondImage.get_crop(mouseX1,mouseY1,mouseX2,mouseY2);
+        cWidth = mouseX2 - mouseX1;
+        cHeight = mouseY2 - mouseY1;
+        disp.resize(cWidth,cHeight);
+        return;
 
       default: 
         std::cout << "Enter another value" << std::endl;
@@ -501,12 +590,12 @@ void grayScaleAverage(CImg<unsigned char>& anImage) {
     int width = anImage.width();
     int height = anImage.height();
     CImg<unsigned char> secondImage = anImage;
-    for (int r = 0; r < height; r++) {
-        for (int c = 0; c < width; c++) {
-		    int average = ((int)secondImage(c,r,0,0)+(int)secondImage(c,r,0,1)+(int)secondImage(c,r,0,2))/3;
-		    secondImage(c,r,0,0) = average;
-		    secondImage(c,r,0,1) = average;
-		    secondImage(c,r,0,2) = average;
+    for (int h = 0; h < height; h++) {
+        for (int w = 0; w < width; w++) {
+		    int average = ((int)secondImage(w,h,0,0)+(int)secondImage(w,h,0,1)+(int)secondImage(w,h,0,2))/3;
+		    secondImage(w,h,0,0) = average;
+		    secondImage(w,h,0,1) = average;
+		    secondImage(w,h,0,2) = average;
 		}
     }
     anImage = secondImage;
@@ -516,14 +605,21 @@ void invert(CImg<unsigned char>& anImage) {
     int width = anImage.width();
     int height = anImage.height();
     CImg<unsigned char> secondImage = anImage;
-    for (int r = 0; r < height; r++) {
-        for (int c = 0; c < width; c++) {
-		        secondImage(c,r,0,0) = 255-(int)secondImage(c,r,0,0);
-            secondImage(c,r,0,1) = 255-(int)secondImage(c,r,0,1);
-            secondImage(c,r,0,2) = 255-(int)secondImage(c,r,0,2);
+    for (int h = 0; h < height; h++) {
+        for (int w = 0; w < width; w++) {
+		        secondImage(w,h,0,0) = 255-(int)secondImage(w,h,0,0);
+            secondImage(w,h,0,1) = 255-(int)secondImage(w,h,0,1);
+            secondImage(w,h,0,2) = 255-(int)secondImage(w,h,0,2);
 		}
     }
     anImage = secondImage;
+}
+
+void backup(std::vector<CImg<unsigned char> >& lastImage, std::vector<int>& windowSizes,
+  CImg<unsigned char>& currentImage,CImgDisplay& second_disp){
+  lastImage.push_back(currentImage);
+  windowSizes.push_back(second_disp.window_height());
+  windowSizes.push_back(second_disp.window_width());
 }
 
 
@@ -531,6 +627,9 @@ int main() {
   CImg<unsigned char> baseImage("len_full.jpg");
   //CImg<unsigned char> lastImage("hongman.jpg");
   std::vector<CImg<unsigned char> > lastImage;
+  std::vector<int> windowSizes;
+  int uWidth = 0;
+  int uHeight = 0;
   CImg<unsigned char> currentImage("len_full.jpg");
   //const unsigned char red[] = { 255,0,0 }, green[] = { 0,255,0 }, blue[] = { 0,0,255 };
   //image.blur(2.5);
@@ -560,6 +659,11 @@ int main() {
         	return 0;       
       	case 1 : 
       		if(lastImage.empty() == false){
+            uWidth = windowSizes.back();
+            windowSizes.pop_back();
+            uHeight = windowSizes.back();
+            windowSizes.pop_back();
+            second_disp.resize(uWidth,uHeight);
 	      		currentImage = lastImage.back(); 
 	      		lastImage.pop_back();
 	      	}
@@ -568,35 +672,35 @@ int main() {
 	      	}
         break;
         case 2 : 
-        	lastImage.push_back(currentImage);
+        	backup(lastImage,windowSizes,currentImage,second_disp);
         	grayScaleAverage(currentImage);
         break;
         case 3 :
-        	lastImage.push_back(currentImage);
+        	backup(lastImage,windowSizes,currentImage,second_disp);
         	invert(currentImage);
         break;
         case 4:
-      		lastImage.push_back(currentImage);
+      		backup(lastImage,windowSizes,currentImage,second_disp);
         	blurOrSharpen(currentImage,second_disp);
         break;
         case 5:
-      		lastImage.push_back(currentImage);
+      		backup(lastImage,windowSizes,currentImage,second_disp);
         	colorOverlay(currentImage);
         break;
         case 6:
-      		lastImage.push_back(currentImage);
+      		backup(lastImage,windowSizes,currentImage,second_disp);
         	brightDark(currentImage,second_disp);
         break;
         case 7:
-          lastImage.push_back(currentImage);
+          backup(lastImage,windowSizes,currentImage,second_disp);
           noise(currentImage,second_disp);
         break;
         case 8:
-      		lastImage.push_back(currentImage);
+          backup(lastImage,windowSizes,currentImage,second_disp);
         	crop(currentImage,second_disp);
         break;
         case 9:
-        	lastImage.push_back(currentImage);
+        	backup(lastImage,windowSizes,currentImage,second_disp);
         	histogramEqualization(currentImage);
         break;
       	default: 
