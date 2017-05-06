@@ -92,7 +92,6 @@ void edgeDetection(CImg<unsigned char>& anImage) {
 					sum2 += anImage(w+l,h+m,0,color)*mask2[l][m];
 				}
       		int value = abs(sum1) + abs(sum2);
-      		std::cout << value << ' ';
             if ((value <= 255) && (value >= 0))
             	secondImage(w,h,0,color)= value;
             else if(value > 255)
