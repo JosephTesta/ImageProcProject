@@ -21,7 +21,6 @@ int main() {
 g++ -o main main.cpp -O2 -L/usr/X11R6/lib -lm -lpthread -lX11 
 #endif
 
-//Try if magnitude>10 then call the function again and push the last one onto the vector. pass the vector in function.
 
 
 
@@ -67,6 +66,40 @@ void histogramEqualization(CImg<unsigned char>& anImage) {
 		}
 	}
 
+	anImage = secondImage;
+}
+
+void edgeDetection(CImg<unsigned char>& anImage) {
+	int width = anImage.width();
+  	int height = anImage.height();
+	CImg<unsigned char> secondImage = anImage;
+	int maskSize = 2;
+	int mask1[maskSize][maskSize] = {{1,0},{0,-1}};
+	int mask2[maskSize][maskSize] = {{0,1},{-1,0}};
+	int edgeSize = 1;
+	for (int color = 0; color < 3; color++)
+		for (int h=0; h<height; h++)
+			for (int w = 0; w < width; w++)
+				secondImage(w,h,0,color)=anImage(w,h,0,color);
+	for (int color = 0; color < 3; color++)
+      for (int h = 0; h < height-1; h++)
+      	for (int w = 0; w < width-1; w++) {
+      		int sum1=0;
+			int sum2=0;
+      		for (int l = 0; l < maskSize; l++)
+				for (int m = 0; m < maskSize; m++){
+					sum1 += anImage(w+l,h+m,0,color)*mask1[l][m];
+					sum2 += anImage(w+l,h+m,0,color)*mask2[l][m];
+				}
+      		int value = abs(sum1) + abs(sum2);
+      		std::cout << value << ' ';
+            if ((value <= 255) && (value >= 0))
+            	secondImage(w,h,0,color)= value;
+            else if(value > 255)
+            	secondImage(w,h,0,color) = 255;
+            else
+                secondImage(w,h,0,color) = 0;
+        }
 	anImage = secondImage;
 }
 
@@ -624,13 +657,13 @@ void backup(std::vector<CImg<unsigned char> >& lastImage, std::vector<int>& wind
 
 
 int main() {
-  CImg<unsigned char> baseImage("len_full.jpg");
+  CImg<unsigned char> baseImage("lenna.png");
   //CImg<unsigned char> lastImage("hongman.jpg");
   std::vector<CImg<unsigned char> > lastImage;
   std::vector<int> windowSizes;
   int uWidth = 0;
   int uHeight = 0;
-  CImg<unsigned char> currentImage("len_full.jpg");
+  CImg<unsigned char> currentImage("lenna.png");
   //const unsigned char red[] = { 255,0,0 }, green[] = { 0,255,0 }, blue[] = { 0,0,255 };
   //image.blur(2.5);
   //blurImage(image);
@@ -650,6 +683,7 @@ int main() {
     "\nPress 7 to add noise"
     "\nPress 8 to crop" 
     "\nPress 9 to equalize the histogram"
+    "\nPress 10 to detect edges"
     << std::endl;
     std::cin >> choice;
     switch(choice) {
@@ -702,6 +736,10 @@ int main() {
         case 9:
         	backup(lastImage,windowSizes,currentImage,second_disp);
         	histogramEqualization(currentImage);
+        break;
+        case 10:
+        	backup(lastImage,windowSizes,currentImage,second_disp);
+        	edgeDetection(currentImage);
         break;
       	default: 
         	std::cout << "Enter another value" << std::endl;
